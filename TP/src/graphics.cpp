@@ -95,6 +95,7 @@ void init_graphics() {
         glClearDepthf(0.0f);
     }
 
+    
     glActiveTexture(GL_TEXTURE0);
     glEnable(GL_FRAMEBUFFER_SRGB);
 

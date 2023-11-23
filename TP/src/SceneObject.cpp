@@ -1,30 +1,53 @@
 #include "SceneObject.h"
 
+#include <glad/glad.h>
+
 #include <glm/gtc/matrix_transform.hpp>
 
-namespace OM3D {
+namespace OM3D
+{
 
-SceneObject::SceneObject(std::shared_ptr<StaticMesh> mesh, std::shared_ptr<Material> material) :
-    _mesh(std::move(mesh)),
-    _material(std::move(material)) {
-}
-
-void SceneObject::render() const {
-    if(!_material || !_mesh) {
-        return;
+    SceneObject::SceneObject(std::shared_ptr<StaticMesh> mesh, std::shared_ptr<Material> material)
+        : _mesh(std::move(mesh))
+        , _material(std::move(material))
+    {
+        canCull = _material->get_blend_mode() == BlendMode::Alpha;
     }
 
-    _material->set_uniform(HASH("model"), transform());
-    _material->bind();
-    _mesh->draw();
-}
+    void SceneObject::render() const
+    {
+        if (!_material || !_mesh)
+        {
+            return;
+        }
 
-void SceneObject::set_transform(const glm::mat4& tr) {
-    _transform = tr;
-}
+        _material->set_uniform(HASH("model"), transform());
+        _material->bind();
+        if (canCull)
+        {
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+            glFrontFace(GL_CCW);
+        }
 
-const glm::mat4& SceneObject::transform() const {
-    return _transform;
-}
+        _mesh->draw();
 
-}
+        if (canCull)
+        {
+            glDisable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+            glFrontFace(GL_CCW);
+        }
+    }
+
+    void SceneObject::set_transform(const glm::mat4 &tr)
+    {
+        _transform = tr;
+    }
+
+    const glm::mat4 &SceneObject::transform() const
+    {
+        return _transform;
+    }
+
+} // namespace OM3D

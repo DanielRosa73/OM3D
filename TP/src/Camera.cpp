@@ -128,7 +128,7 @@ Frustum Camera::build_frustum() const {
     const glm::vec3 camera_right = right();
 
     Frustum frustum;
-    frustum._near_normal = camera_forward;
+    frustum.__normal = camera_forward;
 
     const float half_fov = fov() * 0.5f;
     const float half_fov_v = std::atan(std::tan(half_fov) * ratio());
