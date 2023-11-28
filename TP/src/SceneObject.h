@@ -20,6 +20,7 @@ namespace OM3D
 
         void set_transform(const glm::mat4 &tr);
         const glm::mat4 &transform() const;
+        const glm::vec3 getPosition() const;
 
     private:
         glm::mat4 _transform = glm::mat4(1.0f);

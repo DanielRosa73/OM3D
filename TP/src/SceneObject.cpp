@@ -50,4 +50,9 @@ namespace OM3D
         return _transform;
     }
 
+    const glm::vec3 SceneObject::getPosition() const
+    {
+        return glm::vec3(_transform[3][0], _transform[3][1], _transform[3][2]);
+    }
+
 } // namespace OM3D
