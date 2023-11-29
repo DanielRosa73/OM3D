@@ -53,11 +53,8 @@ namespace OM3D
         }
 
         // glm::vec3 tmp = glm::vec3(max[0] - min[0], max[1] - min[1], max[2] - min[2]);
-        glm::vec3 tmp = max - min;
-
-        _cullRadius = glm::length(tmp);
-        // _barycenter = glm::vec3(0.5 * tmp[0], 0.5 * tmp[1], 0.5 * tmp[2]);
-        _barycenter = 0.5f * tmp;
+        _cullRadius = glm::length(max - min);
+        _barycenter = 0.5f * (max - min);
         std::cout << _barycenter[0] << " " << _barycenter[1] << " " << _barycenter[2] << "\n";
         std::cout << " radius " << _cullRadius << "\n";
     }
@@ -100,8 +97,8 @@ namespace OM3D
 
     const glm::vec3 SceneObject::getPosition() const
     {
-        return glm::vec3(_transform[3][0], _transform[3][1], _transform[3][2]);
-        // return _barycenter + glm::vec3(_transform[3][0], _transform[3][1], _transform[3][2]);
+        // return glm::vec3(_transform[3][0], _transform[3][1], _transform[3][2]);
+        return _barycenter + glm::vec3(_transform[3][0], _transform[3][1], _transform[3][2]);
         // return _barycenter;
     }
 

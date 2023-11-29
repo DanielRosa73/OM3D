@@ -63,31 +63,31 @@ namespace OM3D
         float tmp;
         tmp = pointPlaneDistance(frustum._near_normal, pos);
         // std::cout << " near " << tmp << "\n";
-        if (tmp < 0.0)
+        if (tmp < -radius)
         {
             return 1;
         }
         tmp = pointPlaneDistance(frustum._top_normal, pos);
         // std::cout << " top " << tmp << "\n";
-        if (tmp < 0.0)
+        if (tmp < -radius)
         {
             return 1;
         }
         tmp = pointPlaneDistance(frustum._bottom_normal, pos);
         // std::cout << " bot " << tmp << "\n";
-        if (tmp < 0.0)
+        if (tmp < -radius)
         {
             return 1;
         }
         tmp = pointPlaneDistance(frustum._right_normal, pos);
         // std::cout << " right " << tmp << "\n";
-        if (tmp < 0.0)
+        if (tmp < -radius)
         {
             return 1;
         }
         tmp = pointPlaneDistance(frustum._left_normal, pos);
         // std::cout << " left " << tmp << "\n";
-        if (tmp < 0.0)
+        if (tmp < -radius)
         {
             return 1;
         }

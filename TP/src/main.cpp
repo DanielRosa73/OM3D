@@ -72,21 +72,22 @@ void process_inputs(GLFWwindow *window, Camera &camera)
 
     {
         glm::vec3 movement = {};
+        float sensibility = 5.0;
         if (glfwGetKey(window, 'W') == GLFW_PRESS)
         {
-            movement += camera.forward();
+            movement += sensibility * camera.forward();
         }
         if (glfwGetKey(window, 'S') == GLFW_PRESS)
         {
-            movement -= camera.forward();
+            movement -= sensibility * camera.forward();
         }
         if (glfwGetKey(window, 'D') == GLFW_PRESS)
         {
-            movement += camera.right();
+            movement += sensibility * camera.right();
         }
         if (glfwGetKey(window, 'A') == GLFW_PRESS)
         {
-            movement -= camera.right();
+            movement -= sensibility * camera.right();
         }
 
         float speed = 10.0f;
