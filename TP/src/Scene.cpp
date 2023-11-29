@@ -48,37 +48,44 @@ namespace OM3D
         _sun_color = color;
     }
 
-    bool frustumCull(const SceneObject &obj, Frustum &frustum)
+    float pointPlaneDistance(glm::vec3 normal, glm::vec3 pos)
     {
-        glm::vec3 pos = obj.getPosition();
+        return glm::dot(normal, pos);
+    }
+
+    bool frustumCull(const SceneObject &obj, Frustum &frustum, const glm::mat4 &view)
+    {
+        glm::vec3 pos = glm::vec3(glm::vec4(obj.getPosition(), 1.0));
+        float radius = obj.getCullRadius();
+
         // std::cout << " pos " << pos[0] << " " << pos[1] << " " << pos[2] << "\n";
 
         float tmp;
-        tmp = glm::dot(frustum._near_normal, pos);
+        tmp = pointPlaneDistance(frustum._near_normal, pos);
         // std::cout << " near " << tmp << "\n";
         if (tmp < 0.0)
         {
             return 1;
         }
-        tmp = glm::dot(frustum._top_normal, pos);
+        tmp = pointPlaneDistance(frustum._top_normal, pos);
         // std::cout << " top " << tmp << "\n";
         if (tmp < 0.0)
         {
             return 1;
         }
-        tmp = glm::dot(frustum._bottom_normal, pos);
+        tmp = pointPlaneDistance(frustum._bottom_normal, pos);
         // std::cout << " bot " << tmp << "\n";
         if (tmp < 0.0)
         {
             return 1;
         }
-        tmp = glm::dot(frustum._right_normal, pos);
+        tmp = pointPlaneDistance(frustum._right_normal, pos);
         // std::cout << " right " << tmp << "\n";
         if (tmp < 0.0)
         {
             return 1;
         }
-        tmp = glm::dot(frustum._left_normal, pos);
+        tmp = pointPlaneDistance(frustum._left_normal, pos);
         // std::cout << " left " << tmp << "\n";
         if (tmp < 0.0)
         {
@@ -117,7 +124,7 @@ namespace OM3D
         Frustum f = _camera.build_frustum();
         for (const SceneObject &obj : _objects)
         {
-            if (!frustumCull(obj, f))
+            if (!frustumCull(obj, f, _camera.view_matrix()))
             {
                 obj.render();
             }

@@ -166,6 +166,12 @@ namespace OM3D
             frustum._right_normal = camera_forward * s - camera_right * c;
         }
 
+        frustum._near_normal = glm::normalize(frustum._near_normal);
+        frustum._top_normal = glm::normalize(frustum._top_normal);
+        frustum._bottom_normal = glm::normalize(frustum._bottom_normal);
+        frustum._right_normal = glm::normalize(frustum._right_normal);
+        frustum._left_normal = glm::normalize(frustum._left_normal);
+
         return frustum;
     }
 
