@@ -100,8 +100,8 @@ namespace OM3D
 
     const glm::vec3 SceneObject::getPosition() const
     {
-        // return glm::vec3(_transform[3][0], _transform[3][1], _transform[3][2]);
-        return _barycenter + glm::vec3(_transform[3][0], _transform[3][1], _transform[3][2]);
+        return glm::vec3(_transform[3][0], _transform[3][1], _transform[3][2]);
+        // return _barycenter + glm::vec3(_transform[3][0], _transform[3][1], _transform[3][2]);
         // return _barycenter;
     }
 

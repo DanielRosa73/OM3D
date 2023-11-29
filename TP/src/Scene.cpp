@@ -53,9 +53,9 @@ namespace OM3D
         return glm::dot(normal, pos);
     }
 
-    bool frustumCull(const SceneObject &obj, Frustum &frustum, const glm::mat4 &view)
+    bool frustumCull(const SceneObject &obj, Frustum &frustum, const glm::mat4 &view, glm::vec3 cameraPos)
     {
-        glm::vec3 pos = glm::vec3(glm::vec4(obj.getPosition(), 1.0));
+        glm::vec3 pos = obj.getPosition() - cameraPos;
         float radius = obj.getCullRadius();
 
         // std::cout << " pos " << pos[0] << " " << pos[1] << " " << pos[2] << "\n";
@@ -124,7 +124,7 @@ namespace OM3D
         Frustum f = _camera.build_frustum();
         for (const SceneObject &obj : _objects)
         {
-            if (!frustumCull(obj, f, _camera.view_matrix()))
+            if (!frustumCull(obj, f, _camera.view_matrix(), _camera.position()))
             {
                 obj.render();
             }
