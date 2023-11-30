@@ -117,4 +117,32 @@ namespace OM3D
         return material;
     }
 
+    std::shared_ptr<Material> Material::empty_material_deferred()
+    {
+        static std::weak_ptr<Material> weak_material;
+        auto material = weak_material.lock();
+        if (!material)
+        {
+            material = std::make_shared<Material>();
+            material->_program = Program::from_files("lit_deferred.frag", "basic.vert");
+            weak_material = material;
+        }
+        return material;
+    }
+
+    Material Material::textured_material_deferred()
+    {
+        Material material;
+        material._program = Program::from_files("lit_deferred.frag", "basic.vert", { "TEXTURED" });
+        return material;
+    }
+
+    Material Material::textured_normal_mapped_material_deferred()
+    {
+        Material material;
+        material._program = Program::from_files("lit_deferred.frag", "basic.vert",
+                                                std::array<std::string, 2>{ "TEXTURED", "NORMAL_MAPPED" });
+        return material;
+    }
+
 } // namespace OM3D

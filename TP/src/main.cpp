@@ -397,8 +397,7 @@ int main(int argc, char **argv)
             debug_program->bind();
             debug_program->set_uniform(HASH("selectedTexture"), debug_selected_item);
 
-            // renderer.lit_hdr_texture.bind(0);
-            renderer.albedo_texture.bind(0);
+            renderer.lit_hdr_texture.bind(0);
 
             glDrawArrays(GL_TRIANGLES, 0, 3);
         }

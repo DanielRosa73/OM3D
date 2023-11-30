@@ -499,16 +499,19 @@ namespace OM3D
 
                         if (!albedo)
                         {
-                            mat = Material::empty_material();
+                            // mat = Material::empty_material();
+                            mat = Material::empty_material_deferred();
                         }
                         else if (!normal)
                         {
-                            mat = std::make_shared<Material>(Material::textured_material());
+                            // mat = std::make_shared<Material>(Material::textured_material());
+                            mat = std::make_shared<Material>(Material::textured_material_deferred());
                             mat->set_texture(0u, albedo);
                         }
                         else
                         {
-                            mat = std::make_shared<Material>(Material::textured_normal_mapped_material());
+                            // mat = std::make_shared<Material>(Material::textured_normal_mapped_material());
+                            mat = std::make_shared<Material>(Material::textured_normal_mapped_material_deferred());
                             mat->set_texture(0u, albedo);
                             mat->set_texture(1u, normal);
                         }

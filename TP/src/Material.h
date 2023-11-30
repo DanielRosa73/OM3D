@@ -47,6 +47,10 @@ namespace OM3D
         static Material textured_material();
         static Material textured_normal_mapped_material();
 
+        static std::shared_ptr<Material> empty_material_deferred();
+        static Material textured_material_deferred();
+        static Material textured_normal_mapped_material_deferred();
+
     private:
         std::shared_ptr<Program> _program;
         std::vector<std::pair<u32, std::shared_ptr<Texture>>> _textures;
