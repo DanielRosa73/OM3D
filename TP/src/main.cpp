@@ -125,7 +125,7 @@ void process_inputs(GLFWwindow *window, Camera &camera)
     mouse_pos = new_mouse_pos;
 }
 
-void gui(ImGuiRenderer &imgui, size_t &nbCulled)
+void gui(ImGuiRenderer &imgui, size_t &nbCulled, u32 &debug_item_current)
 {
     imgui.start();
     DEFER(imgui.finish());
@@ -156,6 +156,20 @@ void gui(ImGuiRenderer &imgui, size_t &nbCulled)
 
         if (scene && ImGui::BeginMenu("Scene Info"))
         {
+            ImGui::Text("%u objects", u32(scene->objects().size()));
+            ImGui::Text("%u point lights", u32(scene->point_lights().size()));
+            ImGui::Text("%u culled objects", u32(nbCulled));
+            ImGui::EndMenu();
+        }
+
+        // TODO debug dropdown
+        const char *debug_items[] = { "Albedo", "Normal", "Depth" };
+        if (scene && ImGui::BeginMenu("Debug"))
+        {
+            if (ImGui::Combo("Debug Texture", (int *)(&debug_item_current), debug_items, IM_ARRAYSIZE(debug_items)))
+            {
+                // debug item updated;
+            }
             ImGui::Text("%u objects", u32(scene->objects().size()));
             ImGui::Text("%u point lights", u32(scene->point_lights().size()));
             ImGui::Text("%u culled objects", u32(nbCulled));
@@ -276,8 +290,16 @@ struct RendererState
             state.depth_texture = Texture(size, ImageFormat::Depth32_FLOAT);
             state.lit_hdr_texture = Texture(size, ImageFormat::RGBA16_FLOAT);
             state.tone_mapped_texture = Texture(size, ImageFormat::RGBA8_UNORM);
-            state.main_framebuffer = Framebuffer(&state.depth_texture, std::array{ &state.lit_hdr_texture });
+
+            state.albedo_texture = Texture(size, ImageFormat::RGBA8_sRGB);
+            state.normal_texture = Texture(size, ImageFormat::RGBA8_UNORM);
+
+            // state.main_framebuffer = Framebuffer(&state.depth_texture, std::array{ &state.lit_hdr_texture });
+            state.main_framebuffer = Framebuffer(nullptr, std::array{ &state.lit_hdr_texture });
             state.tone_map_framebuffer = Framebuffer(nullptr, std::array{ &state.tone_mapped_texture });
+
+            state.G_framebuffer =
+                Framebuffer(&state.depth_texture, std::array{ &state.albedo_texture, &state.normal_texture });
         }
 
         return state;
@@ -289,8 +311,13 @@ struct RendererState
     Texture lit_hdr_texture;
     Texture tone_mapped_texture;
 
+    Texture albedo_texture;
+    Texture normal_texture;
+
     Framebuffer main_framebuffer;
     Framebuffer tone_map_framebuffer;
+
+    Framebuffer G_framebuffer;
 };
 
 int main(int argc, char **argv)
@@ -322,8 +349,11 @@ int main(int argc, char **argv)
     scene = create_default_scene();
 
     auto tonemap_program = Program::from_files("tonemap.frag", "screen.vert");
+    auto debug_program = Program::from_files("debug.frag", "screen.vert");
+
     RendererState renderer;
 
+    u32 debug_selected_item = 0;
     for (;;)
     {
         glfwPollEvents();
@@ -353,24 +383,32 @@ int main(int argc, char **argv)
         // Render the scene
         size_t nbCulled;
         {
-            renderer.main_framebuffer.bind();
+            // renderer.main_framebuffer.bind();
+            renderer.G_framebuffer.bind();
             scene->render(nbCulled);
         }
 
         // Apply a tonemap in compute shader
         {
-            renderer.tone_map_framebuffer.bind();
-            tonemap_program->bind();
-            tonemap_program->set_uniform(HASH("exposure"), exposure);
-            renderer.lit_hdr_texture.bind(0);
+            // renderer.tone_map_framebuffer.bind();
+            // tonemap_program->bind();
+            // tonemap_program->set_uniform(HASH("exposure"), exposure);
+            renderer.main_framebuffer.bind();
+            debug_program->bind();
+            debug_program->set_uniform(HASH("selectedTexture"), debug_selected_item);
+
+            // renderer.lit_hdr_texture.bind(0);
+            renderer.albedo_texture.bind(0);
+
             glDrawArrays(GL_TRIANGLES, 0, 3);
         }
 
         // Blit tonemap result to screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        renderer.tone_map_framebuffer.blit();
+        // renderer.tone_map_framebuffer.blit();
+        renderer.main_framebuffer.blit();
 
-        gui(imgui, nbCulled);
+        gui(imgui, nbCulled, debug_selected_item);
 
         glfwSwapBuffers(window);
     }
